@@ -7,4 +7,8 @@
         <RootNamespace>ManagerTask</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\ManagerTask.Domain\ManagerTask.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
