@@ -5,10 +5,19 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>ManagerTask</RootNamespace>
+        <UserSecretsId>61cfc6c8-4c42-4609-b2f1-144ccadfadb8</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\ManagerTask.Domain\ManagerTask.Domain.csproj" />
+      <ProjectReference Include="..\ManagerTask.Domain\ManagerTask.Domain.csproj" />
+      <ProjectReference Include="..\ManagerTask.Infrastructure\ManagerTask.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

@@ -10,14 +10,11 @@ public class Table
     public string Description { get; private set; }
     public List<TaskEntity.Task> Tasks { get; private set; } = [];
 
-    public Table(Guid id, string name, string description, List<TaskEntity.Task>? tasks = null)
+    public Table(Guid id, string name, string description)
     {
         Id = id;
         Name = name;
         Description = description;
-        
-        if (tasks is not null && tasks.Count != 0)
-            Tasks = tasks;
     }
     
     public static Result<Table> Create(string name, string description) 
@@ -38,7 +35,12 @@ public class Table
         if (validationResult.IsFailed)
             return Result.Fail(validationResult.Errors);
 
-        var table = new Table(Guid.NewGuid(), name, description, tasks);
+        var table = new Table(Guid.NewGuid(), name, description);
+        var addTasksResult = table.AddTasks(tasks);
+        
+        if (addTasksResult.IsFailed)
+            return Result.Fail(addTasksResult.Errors);
+        
         return table;
     }
 
@@ -61,6 +63,17 @@ public class Table
         if (string.IsNullOrWhiteSpace(description))
             return Result.Fail("Table description cannot be empty.");
         
+        return Result.Ok();
+    }
+    
+    private Result AddTasks(List<Task>? tasks)
+    {
+        if (tasks is null || tasks.Count == 0)
+        {
+            return Result.Fail("Tasks list cannot be null or empty.");
+        }
+
+        Tasks.AddRange(tasks);
         return Result.Ok();
     }
 }

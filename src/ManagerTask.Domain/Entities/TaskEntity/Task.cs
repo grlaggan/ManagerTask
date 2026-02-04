@@ -8,19 +8,18 @@ public class Task
     public Guid Id { get; private set; }
     public string Name { get; private set; }
     public string Description { get; private set; }
-    public Table Table { get; private set; } 
+    public Table Table { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public DateTime SendTime { get; private set; }
     public StatusTask Status { get; private set; }
 
-    public Task(Guid id, string name, string description, DateTime sendTime, Table table)
+    public Task(Guid id, string name, string description, DateTime sendTime)
     {
         Id = id;
         Name = name;
         Description = description;
         CreatedAt = DateTime.UtcNow;
         SendTime = sendTime;
-        Table = table;
         Status = StatusTask.Pending;
     }
     
@@ -34,7 +33,10 @@ public class Task
         if (table is null)
             return Result.Fail("Table cannot be null.");
         
-        var task = new Task(Guid.NewGuid(), name, description, sendTime, table);
+        var task = new Task(Guid.NewGuid(), name, description, sendTime)
+        {
+            Table = table
+        };
         return task;
     }
 
