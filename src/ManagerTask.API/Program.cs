@@ -1,10 +1,15 @@
+using ManagerTask.Application.Handlers.Table;
 using ManagerTask.Application.Handlers.Task;
+using ManagerTask.Application.Models.Profiles;
 using ManagerTask.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(CreateTaskHandler).Assembly)
+{
+    cfg.RegisterServicesFromAssemblyContaining<GetTablesHandler>();
+}
 );
 builder.Services.AddControllers()
     .AddJsonOptions(opt =>
@@ -15,8 +20,22 @@ builder.Services.AddControllers()
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddAutoMapper(static cfg =>
+{
+    cfg.AddProfile<TableProfile>();
+});
+
 var app = builder.Build();
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger()
+        .UseSwaggerUI(opt =>
+        {
+            opt.SwaggerEndpoint("/swagger/v1/swagger.json", "ManagerTask API V1");
+        });
+}
 
 app.Run();

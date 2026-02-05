@@ -26,6 +26,11 @@ public class CreateTableHandler(ITableRepository repository) : IRequestHandler<C
         if (createResult.IsFailed)
             return Result.Fail(createResult.Errors[0]);
 
+        var saveResult = await repository.SaveAsync(cancellationToken);
+
+        if (saveResult.IsFailed)
+            return Result.Fail(saveResult.Errors[0]);
+
         return tableResult.Value.Id;
     }
 

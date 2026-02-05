@@ -17,6 +17,11 @@ public class TableRepository(IApplicationDbContext context) : ITableRepository
         return table.Id;
     }
 
+    public async Task<Result<List<Table>>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var tables = await context.Tables.ToListAsync(cancellationToken);
+        return tables;
+    }
 
     public async Task<Result<Table>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -37,4 +42,11 @@ public class TableRepository(IApplicationDbContext context) : ITableRepository
 
         return result;
     }
+
+    public async Task<Result> SaveAsync(CancellationToken cancellationToken)
+    {
+        await context.SaveChangesAsync(cancellationToken);
+        return Result.Ok();
+    }
+
 }

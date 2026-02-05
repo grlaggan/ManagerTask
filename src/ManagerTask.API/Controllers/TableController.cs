@@ -1,7 +1,5 @@
-using FluentResults;
 using ManagerTask.Application.Commands.Table;
-using ManagerTask.Application.Commands.Task;
-using ManagerTask.Dtos.Task;
+using ManagerTask.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +24,23 @@ public class TableController(IMediator mediator) : ControllerBase
             );
 
         var response = new CreateTableResponse("Table created successfully", result.Value);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<GetTablesResponse>> GetTablesAsync()
+    {
+        var query = new GetTablesQuery();
+        var result = await mediator.Send(query);
+
+        if (result.IsFailed)
+            return Problem(
+                title: "Error fetching tables",
+                detail: result.Errors[0].Message,
+                statusCode: StatusCodes.Status400BadRequest
+            );
+
+        var response = new GetTablesResponse(result.Value);
         return Ok(response);
     }
 }
