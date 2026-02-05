@@ -20,6 +20,9 @@ public class TableHandlersTests
         repositoryMock
             .Setup(r => r.CreateAsync(It.IsAny<Table>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok(Guid.NewGuid()));
+        repositoryMock
+            .Setup(r => r.SaveAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok());
 
         var handler = new CreateTableHandler(repositoryMock.Object);
         var command = new CreateTableCommand("Test Table", "Test Description");
@@ -46,6 +49,9 @@ public class TableHandlersTests
         repositoryMock
             .Setup(r => r.CreateAsync(It.IsAny<Table>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok(Guid.NewGuid()));
+        repositoryMock
+            .Setup(r => r.SaveAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok());
 
         var handler = new CreateTableHandler(repositoryMock.Object);
         var command = new CreateTableCommand("Test Table", "Test Description");
