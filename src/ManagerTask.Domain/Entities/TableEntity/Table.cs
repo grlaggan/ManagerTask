@@ -1,4 +1,5 @@
 using FluentResults;
+using ManagerTask.Domain.Common.Errors;
 using Task = ManagerTask.Domain.Entities.TaskEntity.Task;
 
 namespace ManagerTask.Domain.Entities.TableEntity;
@@ -48,7 +49,7 @@ public class Table
     {
         if (task is null)
         {
-            return Result.Fail("Task cannot be null.");
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Table.TableTasksNull, "Task cannot be null"));
         }
 
         Tasks.Add(task);
@@ -58,10 +59,10 @@ public class Table
     private static Result ValidationData(string name, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
-            return Result.Fail("Table name cannot be empty.");
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Table.TableNameEmpty, "Table name cannot be empty."));
 
         if (string.IsNullOrWhiteSpace(description))
-            return Result.Fail("Table description cannot be empty.");
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Table.TableDescriptionEmpty, "Table description cannot be empty."));
 
         return Result.Ok();
     }
@@ -70,7 +71,7 @@ public class Table
     {
         if (tasks is null || tasks.Count == 0)
         {
-            return Result.Fail("Tasks list cannot be null or empty.");
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Table.TableTasksNull, "Tasks list cannot be null or empty."));
         }
 
         Tasks.AddRange(tasks);

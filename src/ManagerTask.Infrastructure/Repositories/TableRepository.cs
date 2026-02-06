@@ -1,5 +1,6 @@
 using FluentResults;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Domain.Common.Errors;
 using ManagerTask.Domain.Entities.TableEntity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ public class TableRepository(IApplicationDbContext context) : ITableRepository
     public async Task<Result<Guid>> CreateAsync(Table? table, CancellationToken cancellationToken)
     {
         if (table is null)
-            return Result.Fail("Table cannot be null");
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Table.TableNull, "Table cannot be null"));
 
         await context.Tables.AddAsync(table, cancellationToken);
 
@@ -28,7 +29,7 @@ public class TableRepository(IApplicationDbContext context) : ITableRepository
         var table = await context.Tables.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
 
         if (table is null)
-            return Result.Fail("Table not found");
+            return Result.Fail(ApplicationError.NotFound(ErrorCodes.Table.TableNotFound, "Table not found"));
 
         return table;
     }
@@ -38,7 +39,7 @@ public class TableRepository(IApplicationDbContext context) : ITableRepository
         var result = await context.Tables.FirstOrDefaultAsync(t => t.Name == name, cancellationToken);
 
         if (result is null)
-            return Result.Fail("Table not found");
+            return Result.Fail(ApplicationError.NotFound(ErrorCodes.Table.TableNotFound, "Table not found"));
 
         return result;
     }

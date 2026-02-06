@@ -8,4 +8,5 @@ public interface ITaskRepository
     public Task<Result<Guid>> CreateAsync(TaskEntity? task, CancellationToken cancellationToken);
     public Task<Result<TaskEntity>> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     public Task<Result<TaskEntity>> GetByNameAsync(string name, CancellationToken cancellationToken);
+    public Task<Result<List<TaskEntity>>> GetAllAsync(CancellationToken cancellationToken);
 }

@@ -3,6 +3,7 @@ using ManagerTask.Application.Abstracts;
 using TaskEntity = ManagerTask.Domain.Entities.TaskEntity.Task;
 using ManagerTask.Application.Commands.Task;
 using MediatR;
+using ManagerTask.Domain.Common.Errors;
 
 namespace ManagerTask.Application.Handlers.Task;
 
@@ -34,7 +35,7 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, Result<Guid>
         if (resultGetByName.IsSuccess)
         {
             transactionScope.Rollback();
-            return Result.Fail("Task with the same name already exists.");
+            return Result.Fail(ApplicationError.Conflict(ErrorCodes.Task.TaskAlreadyExists, "Task with the same name already exists"));
         }
 
         var tableResult = await _tableRepository.GetByIdAsync(request.TableId, cancellationToken);
@@ -62,6 +63,13 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, Result<Guid>
             return Result.Fail(result.Errors[0]);
         }
 
+        var saveChangesResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveChangesResult.IsFailed)
+        {
+            transactionScope.Rollback();
+            return Result.Fail(saveChangesResult.Errors[0]);
+        }
 
         var resultCommit = transactionScope.Commit();
 

@@ -17,11 +17,7 @@ public class TableController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
-            return Problem(
-                title: "Error creating table",
-                detail: result.Errors[0].Message,
-                statusCode: StatusCodes.Status400BadRequest
-            );
+            return result.ToProblemDetails<CreateTableResponse>(HttpContext);
 
         var response = new CreateTableResponse("Table created successfully", result.Value);
         return Ok(response);
@@ -34,11 +30,7 @@ public class TableController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(query);
 
         if (result.IsFailed)
-            return Problem(
-                title: "Error fetching tables",
-                detail: result.Errors[0].Message,
-                statusCode: StatusCodes.Status400BadRequest
-            );
+            return result.ToProblemDetails<GetTablesResponse>(HttpContext);
 
         var response = new GetTablesResponse(result.Value);
         return Ok(response);

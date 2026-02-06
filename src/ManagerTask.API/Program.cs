@@ -1,3 +1,4 @@
+using ManagerTask;
 using ManagerTask.Application.Handlers.Table;
 using ManagerTask.Application.Handlers.Task;
 using ManagerTask.Application.Models.Profiles;
@@ -23,11 +24,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper(static cfg =>
 {
     cfg.AddProfile<TableProfile>();
+    cfg.AddProfile<TaskProfile>();
 });
 
 var app = builder.Build();
 
 app.MapControllers();
+app.ConfigureExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

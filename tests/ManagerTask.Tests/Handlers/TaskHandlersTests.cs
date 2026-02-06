@@ -24,6 +24,14 @@ public class TaskHandlersTests
         var taskResult = TaskEntity.Create("Test Task", "This is a test task", DateTime.UtcNow.AddDays(1), table).Value;
 
         mockTransactionScope
+            .Setup(ts => ts.Rollback())
+            .Returns(Result.Ok());
+
+        mockTransactionManager
+            .Setup(tm => tm.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok());
+
+        mockTransactionScope
             .Setup(ts => ts.Commit())
             .Returns(Result.Ok());
 

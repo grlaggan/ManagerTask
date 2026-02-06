@@ -3,6 +3,7 @@ using ManagerTask.Application.Abstracts;
 using ManagerTask.Application.Commands.Table;
 using TableEntity = ManagerTask.Domain.Entities.TableEntity.Table;
 using MediatR;
+using ManagerTask.Domain.Common.Errors;
 
 namespace ManagerTask.Application.Handlers.Table;
 
@@ -14,7 +15,7 @@ public class CreateTableHandler(ITableRepository repository) : IRequestHandler<C
         var getTableByNameResult = await repository.GetByNameAsync(request.Name, cancellationToken);
 
         if (getTableByNameResult.IsSuccess)
-            return Result.Fail("Table with the same name already exists.");
+            return Result.Fail(ApplicationError.Conflict(ErrorCodes.Table.TableAlreadyExists, "Table with the same name already exists"));
 
         var tableResult = TableEntity.Create(request.Name, request.Description);
 

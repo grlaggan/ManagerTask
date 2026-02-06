@@ -1,4 +1,5 @@
 using FluentResults;
+using ManagerTask.Domain.Common.Errors;
 using ManagerTask.Domain.Entities.TableEntity;
 
 namespace ManagerTask.Domain.Entities.TaskEntity;
@@ -22,17 +23,17 @@ public class Task
         SendTime = sendTime;
         Status = StatusTask.Pending;
     }
-    
-    public static Result<Task> Create(string name, string description, DateTime sendTime, Table? table) 
+
+    public static Result<Task> Create(string name, string description, DateTime sendTime, Table? table)
     {
         var validationResult = ValidationData(name, description, sendTime);
-        
+
         if (validationResult.IsFailed)
             return Result.Fail(validationResult.Errors);
 
         if (table is null)
-            return Result.Fail("Table cannot be null.");
-        
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Task.TaskTableNull, "Table cannot be null."));
+
         var task = new Task(Guid.NewGuid(), name, description, sendTime)
         {
             Table = table
@@ -43,13 +44,17 @@ public class Task
     private static Result ValidationData(string name, string description, DateTime sendTime)
     {
         if (string.IsNullOrWhiteSpace(name))
-            return Result.Fail("Task name cannot be empty.");
+        {
+            return Result.Fail(
+                ApplicationError.Validation(ErrorCodes.Task.TaskNameEmpty, "Task name cannot be empty."));
+        }
+
 
         if (string.IsNullOrWhiteSpace(description))
-            return Result.Fail("Task description cannot be empty.");
-        
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Task.TaskDescriptionEmpty, "Task description cannot be empty."));
+
         if (sendTime < DateTime.UtcNow)
-            return Result.Fail("Send time cannot be in the past.");
+            return Result.Fail(ApplicationError.Validation(ErrorCodes.Task.TaskSendTimePast, "Send time cannot be in the past."));
 
         return Result.Ok();
     }
