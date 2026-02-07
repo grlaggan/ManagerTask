@@ -36,4 +36,18 @@ public class TaskController(IMediator mediator) : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<UpdateTaskResponse>> UpdateTaskAsync(
+        [FromBody] UpdateTaskRequest request, [FromRoute] Guid id)
+    {
+        var command = new UpdateTaskCommand(id, request.Name, request.Description, request.TableId, request.SendTime);
+        var result = await mediator.Send(command);
+
+        if (result.IsFailed)
+            return result.ToProblemDetails<UpdateTaskResponse>(HttpContext);
+
+        var response = new UpdateTaskResponse("Task updated successfully", result.Value);
+        return Ok(response);
+    }
 }

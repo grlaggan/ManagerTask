@@ -7,12 +7,12 @@ namespace ManagerTask.Domain.Entities.TaskEntity;
 public class Task
 {
     public Guid Id { get; private set; }
-    public string Name { get; private set; }
-    public string Description { get; private set; }
-    public Table Table { get; private set; } = null!;
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public Table Table { get; set; } = null!;
     public DateTime CreatedAt { get; private set; }
-    public DateTime SendTime { get; private set; }
-    public StatusTask Status { get; private set; }
+    public DateTime SendTime { get; set; }
+    public StatusTask Status { get; set; }
 
     public Task(Guid id, string name, string description, DateTime sendTime)
     {

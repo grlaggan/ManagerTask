@@ -1,4 +1,5 @@
 using ManagerTask.Application.Commands.Table;
+using ManagerTask.Application.Handlers.Table;
 using ManagerTask.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,20 @@ public class TableController(IMediator mediator) : ControllerBase
             return result.ToProblemDetails<GetTablesResponse>(HttpContext);
 
         var response = new GetTablesResponse(result.Value);
+        return Ok(response);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<UpdateTableResponse>> UpdateTableAsync(
+        [FromBody] UpdateTableRequest request, [FromRoute] Guid id)
+    {
+        var command = new UpdateTableCommand(id, request.Name, request.Description);
+        var result = await mediator.Send(command);
+
+        if (result.IsFailed)
+            return result.ToProblemDetails<UpdateTableResponse>(HttpContext);
+
+        var response = new UpdateTableResponse("Table updated successfully", result.Value);
         return Ok(response);
     }
 }

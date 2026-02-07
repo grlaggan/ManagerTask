@@ -1,6 +1,7 @@
 using FluentResults;
 using ManagerTask.Application.Abstracts;
 using ManagerTask.Domain.Common.Errors;
+using ManagerTask.Domain.Entities.TableEntity;
 using Microsoft.EntityFrameworkCore;
 using Task = ManagerTask.Domain.Entities.TaskEntity.Task;
 
@@ -9,10 +10,12 @@ namespace ManagerTask.Infrastructure.Repositories;
 public class TaskRepository : ITaskRepository
 {
     private readonly IApplicationDbContext _context;
+    private readonly ITableRepository _tableRepository;
 
-    public TaskRepository(IApplicationDbContext context)
+    public TaskRepository(IApplicationDbContext context, ITableRepository tableRepository)
     {
         _context = context;
+        _tableRepository = tableRepository;
     }
 
     public async Task<Result<Guid>> CreateAsync(Task? task, CancellationToken cancellationToken)
@@ -50,5 +53,20 @@ public class TaskRepository : ITaskRepository
             return Result.Fail(ApplicationError.NotFound(ErrorCodes.Task.TaskNotFound, "Task not found"));
 
         return task;
+    }
+
+    public async Task<Result<Guid>> UpdateTaskAsync(Guid TaskId, string Name, string Description, Table table, DateTime SendTime, CancellationToken cancellationToken)
+    {
+        var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == TaskId, cancellationToken);
+
+        if (task is null)
+            return Result.Fail(ApplicationError.NotFound(ErrorCodes.Task.TaskNotFound, "Task not found"));
+
+        task.Name = Name;
+        task.Description = Description;
+        task.SendTime = SendTime;
+        task.Table = table;
+
+        return task.Id;
     }
 }

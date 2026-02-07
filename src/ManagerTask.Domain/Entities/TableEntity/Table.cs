@@ -7,9 +7,9 @@ namespace ManagerTask.Domain.Entities.TableEntity;
 public class Table
 {
     public Guid Id { get; private set; }
-    public string Name { get; private set; }
-    public string Description { get; private set; }
-    public List<TaskEntity.Task> Tasks { get; private set; } = [];
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public List<TaskEntity.Task> Tasks { get; set; } = [];
 
     public Table(Guid id, string name, string description)
     {

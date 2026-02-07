@@ -10,4 +10,5 @@ public interface ITableRepository
     public Task<Result<Table>> GetByNameAsync(string name, CancellationToken cancellationToken);
     public Task<Result<List<Table>>> GetAllAsync(CancellationToken cancellationToken);
     public Task<Result> SaveAsync(CancellationToken cancellationToken);
+    public Task<Result<Guid>> UpdateTableAsync(Guid TableId, string Name, string Description, CancellationToken cancellationToken);
 }

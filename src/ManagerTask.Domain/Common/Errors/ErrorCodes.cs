@@ -25,4 +25,11 @@ public class ErrorCodes
         public const string TableNotFound = "table.not.found";
         public const string TableNull = "table.null";
     }
+
+    public class Transaction
+    {
+        public const string BeginFailed = "transaction.begin.failed";
+        public const string CommitFailed = "transaction.commit.failed";
+        public const string RollbackFailed = "transaction.rollback.failed";
+    }
 }

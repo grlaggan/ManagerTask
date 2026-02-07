@@ -1,6 +1,7 @@
 using System.Data;
 using FluentResults;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Domain.Common.Errors;
 
 namespace ManagerTask.Infrastructure.Common;
 
@@ -14,9 +15,9 @@ public class TransactionScope(IDbTransaction transaction) : ITransactionScope
             transaction.Commit();
             return Result.Ok();
         }
-        catch 
+        catch
         {
-            return Result.Fail("Transaction commit failed");
+            return Result.Fail(ApplicationError.Conflict(ErrorCodes.Transaction.CommitFailed, "Transaction commit failed"));
         }
     }
 
@@ -27,9 +28,9 @@ public class TransactionScope(IDbTransaction transaction) : ITransactionScope
             transaction.Rollback();
             return Result.Ok();
         }
-        catch 
+        catch
         {
-            return Result.Fail("Transaction rollback failed");
+            return Result.Fail(ApplicationError.Conflict(ErrorCodes.Transaction.RollbackFailed, "Transaction rollback failed"));
         }
     }
 

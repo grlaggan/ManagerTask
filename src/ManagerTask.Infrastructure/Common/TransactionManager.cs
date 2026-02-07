@@ -1,5 +1,6 @@
 using FluentResults;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Domain.Common.Errors;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ManagerTask.Infrastructure.Common;
@@ -16,7 +17,7 @@ public class TransactionManager(IApplicationDbContext context) : ITransactionMan
         }
         catch
         {
-            return Result.Fail("Could not begin transaction");
+            return Result.Fail(ApplicationError.Conflict(ErrorCodes.Transaction.BeginFailed, "Could not begin transaction"));
         }
     }
 
@@ -27,9 +28,9 @@ public class TransactionManager(IApplicationDbContext context) : ITransactionMan
             await context.SaveChangesAsync(cancellationToken);
             return Result.Ok();
         }
-        catch 
+        catch
         {
-            return Result.Fail("Could not save changes");
+            return Result.Fail(ApplicationError.Conflict(ErrorCodes.Transaction.CommitFailed, "Could not save changes"));
         }
     }
 }

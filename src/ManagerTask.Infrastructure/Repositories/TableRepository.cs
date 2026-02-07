@@ -50,4 +50,16 @@ public class TableRepository(IApplicationDbContext context) : ITableRepository
         return Result.Ok();
     }
 
+    public async Task<Result<Guid>> UpdateTableAsync(Guid TableId, string Name, string Description, CancellationToken cancellationToken)
+    {
+        var table = await context.Tables.FirstOrDefaultAsync(t => t.Id == TableId, cancellationToken);
+
+        if (table is null)
+            return Result.Fail(ApplicationError.NotFound(ErrorCodes.Table.TableNotFound, "Table not found"));
+
+        table.Name = Name;
+        table.Description = Description;
+
+        return table.Id;
+    }
 }
