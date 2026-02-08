@@ -12,6 +12,15 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<GetTablesHandler>();
 }
 );
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 builder.Services.AddControllers()
     .AddJsonOptions(opt =>
     {
@@ -29,6 +38,7 @@ builder.Services.AddAutoMapper(static cfg =>
 
 var app = builder.Build();
 
+app.UseCors("AllowAll");
 app.MapControllers();
 app.ConfigureExceptionHandler();
 

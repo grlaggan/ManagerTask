@@ -50,4 +50,21 @@ public class TaskController(IMediator mediator) : ControllerBase
         var response = new UpdateTaskResponse("Task updated successfully", result.Value);
         return Ok(response);
     }
+
+    [HttpPost("byTableName/")]
+    public async Task<ActionResult<CreateTaskResponse>> CreateTaskByTableNameAsync([FromBody] CreateTaskByTableNameRequest request)
+    {
+        var result = await mediator.Send(new CreateTaskByTableNameCommand(
+            request.Name,
+            request.Description,
+            request.TableName,
+            request.SendTime
+        ));
+
+        if (result.IsFailed)
+            return result.ToProblemDetails<CreateTaskResponse>(HttpContext);
+
+        var response = new CreateTaskResponse("Create task by table name successfully", result.Value);
+        return Ok(response);
+    }
 }
