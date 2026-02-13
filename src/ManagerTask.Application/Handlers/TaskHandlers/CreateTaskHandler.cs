@@ -105,8 +105,8 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, Result<Guid>
             await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
         }
 
+        await JobFactory.CreateJob(task, table.Name, scheduler);
+        
         return result.Value;
     }
-
-    
 }

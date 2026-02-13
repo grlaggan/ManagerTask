@@ -14,4 +14,5 @@ public interface ITaskRepository
     public Task<Result<Guid>> UpdateTaskAsync(Guid TaskId, string Name, string Description, Table Table, DateTime SendTime, CancellationToken cancellationToken);
     public Task<Result<List<TaskEntity>>> GetWithDeadlineAsync(Deadline deadline, CancellationToken cancellationToken);
     public Task<Result> UpdateStatusAsync(TaskEntity task, CancellationToken cancellationToken);
+    public Task<Result> UpdateStatusFailedAsync(TaskEntity task, CancellationToken cancellationToken);
 }

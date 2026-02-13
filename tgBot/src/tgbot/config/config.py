@@ -18,3 +18,4 @@ class Config:
         self.tables_endpoint = self._env("TABLES_ENDPOINT")
         self.rabbitmq_url = self._env("RABBIT_URL")
         self.queue_name = self._env("QUEUE_NAME")
+        self.test_chat_id = self._env("TEST_CHAT_ID")

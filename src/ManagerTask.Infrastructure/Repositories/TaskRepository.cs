@@ -87,6 +87,13 @@ public class TaskRepository : ITaskRepository
         return Result.Ok();
     }
 
+    public async Task<Result> UpdateStatusFailedAsync(Task task, CancellationToken cancellationToken)
+    {
+        task.Status = StatusTask.Failed;
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Ok();
+    }
+
     public async Task<Result<Guid>> UpdateTaskAsync(Guid TaskId, string Name, string Description, Table table, DateTime SendTime, CancellationToken cancellationToken)
     {
         var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == TaskId, cancellationToken);

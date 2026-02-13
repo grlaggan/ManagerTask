@@ -97,4 +97,15 @@ public class TaskController(IMediator mediator) : ControllerBase
 
         return Ok();
     }
+
+    [HttpPatch("{id:guid}/status/failed")]
+    public async Task<ActionResult<PatchTaskStatusResponse>> UpdateTaskStatusFailed([FromRoute] Guid id)
+    {
+        var result = await mediator.Send(new UpdateStatusFailedTaskCommand(id));
+
+        if (result.IsFailed)
+            return result.ToProblemDetails<PatchTaskStatusResponse>(HttpContext);
+        
+        return Ok();
+    }
 }

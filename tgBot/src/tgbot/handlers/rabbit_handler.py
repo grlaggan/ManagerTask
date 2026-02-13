@@ -5,9 +5,16 @@ from aiogram import Bot
 from aiogram.types import ChatIdUnion
 
 from models.telegram_message import TelegramMessage
+from config.config import Config
+from services.tasks_service import TasksService
+from models.tasks.get_task_repsponse import GetTaskResponse
+
 
 def create_handler(bot: Bot):
     async def handler(message: aio_pika.IncomingMessage):
+        config = Config(".env")
+        task_service = TasksService(config)
+        
         async with message.process():
             raw_data = json.loads(message.body.decode())
             tg_message = TelegramMessage(**raw_data)
@@ -16,7 +23,7 @@ def create_handler(bot: Bot):
                 ms = f'Название задачи: {tg_message.name}\nОписание задачи: {tg_message.description}\nНазвание таблицы: {tg_message.tableName}\n\nДедлайн через {tg_message.minutes} минут!'
                 
                 await bot.send_message(
-                    chat_id=5218298123,
+                    chat_id=config.test_chat_id,
                     text=ms
                 )
                 return
@@ -24,7 +31,7 @@ def create_handler(bot: Bot):
                 ms = f'Название задачи: {tg_message.name}\nОписание задачи: {tg_message.description}\nНазвание таблицы: {tg_message.tableName}\n\nДедлайн через {tg_message.hours} часов!'
                 
                 await bot.send_message(
-                    chat_id=5218298123,
+                    chat_id=config.test_chat_id,
                     text=ms
                 )
                 return
@@ -33,9 +40,21 @@ def create_handler(bot: Bot):
                 ms = f'Название задачи: {tg_message.name}\nОписание задачи: {tg_message.description}\nНазвание таблицы: {tg_message.tableName}\n\nДедлайн через {tg_message.days} дней!'
                 
                 await bot.send_message(
-                    chat_id=5218298123,
+                    chat_id=config.test_chat_id,
                     text=ms
                 )
                 return
+            
+            ms = f'Название задачи: {tg_message.name}\nОписание задачи: {tg_message.description}\nНазвание таблицы: {tg_message.tableName}\n\nВы не успели выполнить задание!'
+            
+            response: GetTaskResponse = await task_service.get_task_by_name(tg_message.name)
+            await task_service.change_status_on_failed(response.id)
+            
+            await bot.send_message(
+                chat_id=config.test_chat_id,
+                text=ms
+            )
+            return
+                
     
     return handler

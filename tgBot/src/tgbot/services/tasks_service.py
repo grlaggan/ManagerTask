@@ -84,3 +84,9 @@ class TasksService:
             async with session.patch(self.config.tasks_endpoint + f"/{task_id}/status") as response:
                 if response.status != 200:
                     raise ValueError(f"HTTP Error: {response.status} {response.reason}")
+    
+    async def change_status_on_failed(self, task_id: UUID):
+        async with aiohttp.ClientSession() as session:
+            async with session.patch(self.config.tasks_endpoint + f"/{task_id}/status/failed") as response:
+                if response.status != 200:
+                    raise ValueError(f"HTTP Error: {response.status} {response.reason}")

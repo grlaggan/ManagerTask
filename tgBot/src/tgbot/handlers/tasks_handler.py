@@ -123,6 +123,8 @@ async def create_task_command_send_time_days_compelte(message: Message, state: F
     
     id = await tasks_service.create_task(create_task_request)
     
+    await state.clear()
+        
     if id:
         await message.answer("Задача успешно создана!")
         return
@@ -144,6 +146,11 @@ async def change_status_task_command(message: Message, state: FSMContext) -> Non
     except:
         await message.answer('Произошла ошибка! Попробуйте еще раз!')
         return
+
+@router.message(GetTaskState.task_name, F.text == "Отменить")
+async def cancel_change_task_command(message: Message, state: FSMContext) -> None:
+    await state.clear()
+    await message.answer('Отмена изменения задачи')
     
 @router.message(GetTaskState.task_name)
 async def get_task_by_name_command_process(message: Message, state: FSMContext) -> None:
