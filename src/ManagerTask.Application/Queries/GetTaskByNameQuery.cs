@@ -4,4 +4,5 @@ using MediatR;
 
 namespace ManagerTask.Application.Queries;
 
-public record GetTasksQuery() : IRequest<Result<List<TaskDto>>>;
+public record GetTaskByNameQuery(string Name) : IRequest<Result<TaskDto>>;
+    

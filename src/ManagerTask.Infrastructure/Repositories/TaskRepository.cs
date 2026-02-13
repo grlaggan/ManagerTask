@@ -3,6 +3,7 @@ using ManagerTask.Application.Abstracts;
 using ManagerTask.Application.Models.Dtos;
 using ManagerTask.Domain.Common.Errors;
 using ManagerTask.Domain.Entities.TableEntity;
+using ManagerTask.Domain.Entities.TaskEntity;
 using Microsoft.EntityFrameworkCore;
 using Task = ManagerTask.Domain.Entities.TaskEntity.Task;
 
@@ -48,7 +49,8 @@ public class TaskRepository : ITaskRepository
 
     public async Task<Result<Task>> GetByNameAsync(string name, CancellationToken cancellationToken)
     {
-        var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Name == name, cancellationToken);
+        var task = await _context.Tasks.Include(t => t.Table)
+            .FirstOrDefaultAsync(t => t.Name == name, cancellationToken);
 
         if (task is null)
             return Result.Fail(ApplicationError.NotFound(ErrorCodes.Task.TaskNotFound, "Task not found"));
@@ -76,6 +78,13 @@ public class TaskRepository : ITaskRepository
         var tasks = await _context.Tasks.Include(t => t.Table).Where(
                 t => (t.SendTime - DateTime.UtcNow).TotalDays < deadline.Days && (t.SendTime - DateTime.UtcNow).TotalMinutes > 0).ToListAsync(cancellationToken);
         return tasks;
+    }
+
+    public async Task<Result> UpdateStatusAsync(Task task, CancellationToken cancellationToken)
+    {
+        task.Status = StatusTask.Completed;
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Ok();
     }
 
     public async Task<Result<Guid>> UpdateTaskAsync(Guid TaskId, string Name, string Description, Table table, DateTime SendTime, CancellationToken cancellationToken)

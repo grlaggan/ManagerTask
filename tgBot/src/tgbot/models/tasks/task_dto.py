@@ -13,3 +13,4 @@ class TaskDto:
     created_at: datetime.datetime
     table: TableDto
     send_time: datetime.datetime
+    status: int

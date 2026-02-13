@@ -3,6 +3,7 @@ using FluentResults;
 using ManagerTask.Application.Abstracts;
 using ManagerTask.Application.Models.Dtos;
 using ManagerTask.Application.Models.Profiles;
+using ManagerTask.Application.Queries;
 using ManagerTask.Domain.Common.Errors;
 using MediatR;
 

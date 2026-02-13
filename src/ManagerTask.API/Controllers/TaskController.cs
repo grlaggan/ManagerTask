@@ -1,10 +1,12 @@
 using ManagerTask.Application.Commands.Task;
 using ManagerTask.Application.Models.Profiles;
+using ManagerTask.Application.Queries;
 using ManagerTask.Dtos.Task;
+using ManagerTask.Models.Dtos.Task;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ManagerTask;
+namespace ManagerTask.Controllers;
 
 [ApiController]
 [Route("api/tasks")]
@@ -37,6 +39,23 @@ public class TaskController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{name}")]
+    public async Task<ActionResult<GetTaskResponse>> GetTaskByName([FromRoute] string name)
+    {
+        var result = await mediator.Send(new GetTaskByNameQuery(name));
+        
+        if (result.IsFailed)
+            return result.ToProblemDetails<GetTaskResponse>(HttpContext);
+        
+        return Ok(
+            new GetTaskResponse(
+                result.Value.Id,
+                result.Value.Name,
+                result.Value.Description,
+                result.Value.Table.Name,
+                result.Value.Status));
+    }
+
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<UpdateTaskResponse>> UpdateTaskAsync(
         [FromBody] UpdateTaskRequest request, [FromRoute] Guid id)
@@ -66,5 +85,16 @@ public class TaskController(IMediator mediator) : ControllerBase
 
         var response = new CreateTaskResponse("Create task by table name successfully", result.Value);
         return Ok(response);
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    public async Task<ActionResult<PatchTaskStatusResponse>> UpdateTaskStatus([FromRoute] Guid id)
+    {
+        var result = await mediator.Send(new UpdateStatusTaskCommand(id));
+
+        if (result.IsFailed)
+            return result.ToProblemDetails<PatchTaskStatusResponse>(HttpContext);
+
+        return Ok();
     }
 }

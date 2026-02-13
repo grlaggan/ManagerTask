@@ -1,20 +1,23 @@
 from aiogram import Router, F
+from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from datetime import datetime, timedelta, timezone
 
-from keyboards.keyboards import tasks_keyboard, times_keyboard
+from keyboards.keyboards import tasks_keyboard, times_keyboard, operations_with_task
 from config.config import Config
 from services.tasks_service import TasksService
 from models.tasks.task_dto import TaskDto
 from models.tasks.create_task_request import CreateTaskRequest
+from models.tasks.get_task_repsponse import GetTaskResponse
 from states.form import Form
+from states.get_task import GetTaskState
 
 router = Router()
 config = Config("./.env")
 tasks_service = TasksService(config)
 
-@router.message(F.text == "Задачи")
+@router.message(F.text == "Задачи" or Command('tasks'))
 async def process_tasks_command(message: Message) -> None:
     await message.answer("Вы выбрали раздел 'Задачи'. Что бы вы хотели сделать?", reply_markup=tasks_keyboard)
 
@@ -125,4 +128,43 @@ async def create_task_command_send_time_days_compelte(message: Message, state: F
         return
     else:
         await message.answer("Произошла ошибка! Попробуйте снова!")
+
+@router.message(F.text == 'Показать задачу')
+async def get_task_by_name_command(message: Message, state: FSMContext) -> None:
+    await state.set_state(GetTaskState.task_name)
+    await message.answer('Отправьте название задачи.')
+    
+@router.message(GetTaskState.task_name, F.text == "Изменить состояние")
+async def change_status_task_command(message: Message, state: FSMContext) -> None:
+    try:
+        state_data = await state.get_data()
+        await tasks_service.change_status(state_data['id'])
+        await message.answer("Состояние изменено!")
+        await state.clear()
+    except:
+        await message.answer('Произошла ошибка! Попробуйте еще раз!')
+        return
+    
+@router.message(GetTaskState.task_name)
+async def get_task_by_name_command_process(message: Message, state: FSMContext) -> None:
+    try:
+        response: GetTaskResponse = await tasks_service.get_task_by_name(message.text)
+        
+        task_state = ''
+        match response.status:
+            case 0:
+                task_state = 'Ожидание'
+            case 1:
+                task_state = 'Выполнено'
+            case 2:
+                task_state = 'Провалено'
+        
+        answer = f'Название: {response.name}\nОписание: {response.description}\nНазвание таблицы: {response.table_name}\nСостояние задачи: {task_state}'
+        await state.update_data(id=response.id)
+        await message.answer(answer)
+        await message.answer("Выберите дальнейшую операцию", reply_markup=operations_with_task)
+    except:
+        await message.answer('Произошла ошибка! Попробуйте еще раз!')
+        return
+
 

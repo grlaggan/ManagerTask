@@ -10,8 +10,10 @@ start_keyboard = ReplyKeyboardMarkup(
 tasks_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Добавить задачу"),
-        KeyboardButton(text="Показать задачи")]
-    ]
+        KeyboardButton(text="Показать задачи"),
+        KeyboardButton(text='Показать задачу')]
+    ],
+    resize_keyboard=True
 )
 
 tables_keyboard = ReplyKeyboardMarkup(
@@ -26,6 +28,14 @@ times_keyboard = ReplyKeyboardMarkup(
         [KeyboardButton(text="Минуты"),
         KeyboardButton(text="Часы"),
         KeyboardButton(text="Дни")]
+    ],
+    resize_keyboard=True
+)
+
+operations_with_task = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Изменить состояние")],
+        [KeyboardButton(text="Отменить")]
     ],
     resize_keyboard=True
 )
