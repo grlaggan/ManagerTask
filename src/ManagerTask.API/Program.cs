@@ -1,11 +1,15 @@
 using ManagerTask;
+using ManagerTask.Application.Abstracts;
 using ManagerTask.Application.Handlers.Table;
-using ManagerTask.Application.Handlers.Task;
 using ManagerTask.Application.Models.Profiles;
 using ManagerTask.Infrastructure;
+using ManagerTask.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<RabbitOptions>(builder.Configuration.GetSection(nameof(RabbitOptions)));
+
+builder.Services.AddSingleton<IRabbitMqService, RabbitMqService>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
 {
@@ -35,6 +39,7 @@ builder.Services.AddAutoMapper(static cfg =>
     cfg.AddProfile<TableProfile>();
     cfg.AddProfile<TaskProfile>();
 });
+builder.Services.AddQuartzDi();
 
 var app = builder.Build();
 
