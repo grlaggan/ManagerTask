@@ -1,5 +1,6 @@
 using FluentResults;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Application.Models.Dtos;
 using ManagerTask.Domain.Common.Errors;
 using ManagerTask.Domain.Entities.TableEntity;
 using Microsoft.EntityFrameworkCore;
@@ -53,6 +54,28 @@ public class TaskRepository : ITaskRepository
             return Result.Fail(ApplicationError.NotFound(ErrorCodes.Task.TaskNotFound, "Task not found"));
 
         return task;
+    }
+
+    public async Task<Result<List<Task>>> GetWithDeadlineAsync(Deadline deadline, CancellationToken cancellationToken)
+    {
+
+        if (deadline.Minutes != 0)
+        {
+            var tasks1 = await _context.Tasks.Include(t => t.Table).Where(
+                t => (t.SendTime - DateTime.UtcNow).TotalMinutes < deadline.Minutes && (t.SendTime - DateTime.UtcNow).TotalMinutes > 0).ToListAsync(cancellationToken);
+            return tasks1;
+        }
+
+        if (deadline.Hours != 0)
+        {
+            var tasks2 = await _context.Tasks.Include(t => t.Table).Where(
+                t => (t.SendTime - DateTime.UtcNow).TotalHours < deadline.Hours && (t.SendTime - DateTime.UtcNow).TotalMinutes > 0).ToListAsync(cancellationToken);
+            return tasks2;
+        }
+
+        var tasks = await _context.Tasks.Include(t => t.Table).Where(
+                t => (t.SendTime - DateTime.UtcNow).TotalDays < deadline.Days && (t.SendTime - DateTime.UtcNow).TotalMinutes > 0).ToListAsync(cancellationToken);
+        return tasks;
     }
 
     public async Task<Result<Guid>> UpdateTaskAsync(Guid TaskId, string Name, string Description, Table table, DateTime SendTime, CancellationToken cancellationToken)

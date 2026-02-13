@@ -1,13 +1,15 @@
+using System.Globalization;
 using FluentResults;
 using ManagerTask.Application.Abstracts;
 using TaskEntity = ManagerTask.Domain.Entities.TaskEntity.Task;
 using ManagerTask.Application.Commands.Task;
+using ManagerTask.Application.Jobs;
 using MediatR;
 using ManagerTask.Domain.Common.Errors;
 using Quartz;
-using ManagerTask.Infrastructure.Jobs;
+using ManagerTask.Application.Jobs;
 
-namespace ManagerTask.Application.Handlers.Task;
+namespace ManagerTask.Application.Handlers.TaskHandlers;
 
 public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, Result<Guid>>
 {
@@ -84,32 +86,27 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, Result<Guid>
             return Result.Fail(resultCommit.Errors[0]);
         }
 
-        JobBuilder.Create<TaskNotificationJob>()
-            .WithIdentity($"TaskNotification-{taskResult.Value.Id}")
-            .UsingJobData("Name", taskResult.Value.Name)
-            .UsingJobData("Description", taskResult.Value.Description)
-            .UsingJobData("TableName", tableResult.Value.Name)
-            .UsingJobData("Minutes", tableResult.Value.Name)
+        var task = taskResult.Value;
+        var table = tableResult.Value;
+
+        if (task.SendTime - DateTime.UtcNow > TimeSpan.FromDays(1))
+        {
+            await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
+            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 5);
+            await JobFactory.CreateJob(task, table.Name, scheduler, days: 1);
+        } else if (task.SendTime - DateTime.UtcNow < TimeSpan.FromDays(1) &&
+                   task.SendTime - DateTime.UtcNow > TimeSpan.FromHours(5))
+        {
+            await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
+            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 5);
+        }
+        else
+        {
+            await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
+        }
 
         return result.Value;
     }
 
-    private async Task CreateJob(TaskEntity task, string tableName, IScheduler scheduler)
-    {
-        var job = JobBuilder.Create<TaskNotificationJob>()
-                    .WithIdentity($"TaskNotificatin-{task.Id}")
-                    .UsingJobData("Name", task.Name)
-                    .UsingJobData("Description", task.Description)
-                    .UsingJobData("TableName", tableName)
-                    .UsingJobData("Minutes", 5)
-                    .UsingJobData("Hours", 0)
-                    .UsingJobData("Days", 0).Build();
-
-        var trigger = TriggerBuilder.Create()
-                    .WithIdentity($"TaskNotificationTrigger-{task.Id}")
-                    .StartAt(DateTimeOffset.Parse(task.SendTime.ToString()))
-                    .Build();
-
-
-    }
+    
 }

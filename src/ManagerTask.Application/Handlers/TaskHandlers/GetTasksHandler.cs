@@ -6,7 +6,7 @@ using ManagerTask.Application.Models.Profiles;
 using ManagerTask.Domain.Common.Errors;
 using MediatR;
 
-namespace ManagerTask.Application.Handlers.Task;
+namespace ManagerTask.Application.Handlers.TaskHandlers;
 
 public class GetTasksHandler(IMapper mapper, ITaskRepository repository) : IRequestHandler<GetTasksQuery, Result<List<TaskDto>>>
 {

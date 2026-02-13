@@ -5,3 +5,7 @@ class Form(StatesGroup):
     description = State()
     table_name = State()
     send_time = State()
+    send_time_minutes = State()
+    send_time_hours = State()
+    send_time_days = State()
+    

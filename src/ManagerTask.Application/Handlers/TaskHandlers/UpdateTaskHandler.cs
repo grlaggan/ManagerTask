@@ -3,12 +3,12 @@ using ManagerTask.Application.Abstracts;
 using ManagerTask.Application.Commands.Task;
 using MediatR;
 
-namespace ManagerTask.Application.Handlers.Task;
+namespace ManagerTask.Application.Handlers.TaskHandlers;
 
 public class UpdateTaskHandler(
     ITaskRepository taskRepository,
-     ITableRepository tableRepository,
-     ITransactionManager transactionManager) : IRequestHandler<UpdateTaskCommand, Result<Guid>>
+    ITableRepository tableRepository,
+    ITransactionManager transactionManager) : IRequestHandler<UpdateTaskCommand, Result<Guid>>
 {
 
     public async Task<Result<Guid>> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
@@ -51,5 +51,4 @@ public class UpdateTaskHandler(
 
         return updateResult;
     }
-
 }

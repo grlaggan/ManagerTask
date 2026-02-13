@@ -4,6 +4,6 @@ namespace ManagerTask.Application.Abstracts;
 
 public interface ITransactionManager
 {
-    Task<Result<ITransactionScope>> BeginTransactionAsync(CancellationToken cancellationToken);
-    Task<Result<int>> SaveChangesAsync(CancellationToken cancellationToken);
+    public Task<Result<ITransactionScope>> BeginTransactionAsync(CancellationToken cancellationToken);
+    public Task<Result<int>> SaveChangesAsync(CancellationToken cancellationToken);
 }
