@@ -32,4 +32,11 @@ public class ErrorCodes
         public const string CommitFailed = "transaction.commit.failed";
         public const string RollbackFailed = "transaction.rollback.failed";
     }
+
+    public class Notification
+    {
+        public const string NotificationNameEmpty = "notification.empty.name";
+        public const string NotificationMessageEmpty = "notification.empty.message";
+        public const string NotificationTimeInvalid = "notification.invalid.time";
+    }
 }

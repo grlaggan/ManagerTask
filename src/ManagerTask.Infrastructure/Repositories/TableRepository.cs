@@ -1,7 +1,9 @@
 using FluentResults;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Application.Common;
 using ManagerTask.Domain.Common.Errors;
 using ManagerTask.Domain.Entities.TableEntity;
+using ManagerTask.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagerTask.Infrastructure.Repositories;
@@ -18,10 +20,19 @@ public class TableRepository(IApplicationDbContext context) : ITableRepository
         return table.Id;
     }
 
-    public async Task<Result<List<Table>>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<Table>>> GetAllAsync(PaginationParams @params, CancellationToken cancellationToken)
     {
-        var tables = await context.Tables.ToListAsync(cancellationToken);
+        var tables = await context.Tables
+            .Page(@params)
+            .ToListAsync(cancellationToken);
         return tables;
+    }
+
+    public async Task<int> GetCountAsync(CancellationToken cancellationToken)
+    {
+        var count = await context.Tables.CountAsync(cancellationToken);
+
+        return count;
     }
 
     public async Task<Result<Table>> GetByIdAsync(Guid id, CancellationToken cancellationToken)

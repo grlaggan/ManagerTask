@@ -11,7 +11,8 @@ tasks_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Добавить задачу"),
         KeyboardButton(text="Показать задачи"),
-        KeyboardButton(text='Показать задачу')]
+        KeyboardButton(text='Показать задачу')],
+        [KeyboardButton(text="Показать задачи по названию таблицы")]
     ],
     resize_keyboard=True
 )

@@ -15,9 +15,9 @@ class TasksService:
     def __init__(self, config: Config):
         self.config = config
     
-    async def get_tasks(self) -> GetTasksResponse:
+    async def get_tasks(self, table_name: str = None) -> GetTasksResponse:
         async with aiohttp.ClientSession() as session:
-            async with session.get(self.config.tasks_endpoint) as response:
+            async with session.get(self.config.tasks_endpoint + f"?tableName={table_name}" if table_name else self.config.tasks_endpoint) as response:
                 if response.status != 200:
                     raise ValueError(f"HTTP Error: {response.status} {response.reason}")
             

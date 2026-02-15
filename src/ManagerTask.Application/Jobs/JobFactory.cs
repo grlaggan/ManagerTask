@@ -1,3 +1,4 @@
+using ManagerTask.Domain.Entities.NotificationEntity;
 using Quartz;
 using TaskEntity = ManagerTask.Domain.Entities.TaskEntity.Task;
 
@@ -28,6 +29,25 @@ public static class JobFactory
             .StartAt(time)
             .Build();
 
+        await scheduler.ScheduleJob(job, trigger);
+    }
+
+    public static async Task CreateNotificationJob(Notification notification, IScheduler scheduler,
+        int minutes = 0, int hours = 0, int days = 0)
+    {
+        var job = JobBuilder.Create<NotificationJob>()
+            .WithDescription($"Notification-{Guid.NewGuid()}")
+            .UsingJobData("Name", notification.Name)
+            .UsingJobData("Message", notification.Message)
+            .UsingJobData("Minutes", minutes)
+            .UsingJobData("Hours", hours)
+            .UsingJobData("Days", days).Build();
+
+        var trigger = TriggerBuilder.Create()
+            .WithIdentity($"NotificationTrigger-{Guid.NewGuid()}")
+            .StartAt(notification.NotificationTime)
+            .Build();
+        
         await scheduler.ScheduleJob(job, trigger);
     }
 }

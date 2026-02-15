@@ -1,4 +1,7 @@
+using System;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentResults;
 using ManagerTask.Application.Abstracts;
 using TaskEntity = ManagerTask.Domain.Entities.TaskEntity.Task;
@@ -92,13 +95,13 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, Result<Guid>
         if (task.SendTime - DateTime.UtcNow > TimeSpan.FromDays(1))
         {
             await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
-            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 5);
+            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 1);
             await JobFactory.CreateJob(task, table.Name, scheduler, days: 1);
         } else if (task.SendTime - DateTime.UtcNow < TimeSpan.FromDays(1) &&
                    task.SendTime - DateTime.UtcNow > TimeSpan.FromHours(5))
         {
             await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
-            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 5);
+            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 1);
         }
         else
         {

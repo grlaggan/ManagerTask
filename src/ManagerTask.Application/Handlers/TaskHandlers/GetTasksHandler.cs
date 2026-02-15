@@ -1,25 +1,45 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentResults;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Application.Common;
 using ManagerTask.Application.Models.Dtos;
-using ManagerTask.Application.Models.Profiles;
+using TaskEntity = ManagerTask.Domain.Entities.TaskEntity.Task;
 using ManagerTask.Application.Queries;
 using ManagerTask.Domain.Common.Errors;
 using MediatR;
 
 namespace ManagerTask.Application.Handlers.TaskHandlers;
 
-public class GetTasksHandler(IMapper mapper, ITaskRepository repository) : IRequestHandler<GetTasksQuery, Result<List<TaskDto>>>
+public class GetTasksHandler(IMapper mapper, ITaskRepository repository) : IRequestHandler<GetTasksQuery,
+    Result<GetTasksResultHandle>>
 {
 
-    public async Task<Result<List<TaskDto>>> Handle(GetTasksQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetTasksResultHandle>> Handle(GetTasksQuery request, CancellationToken cancellationToken)
     {
-        var result = await repository.GetAllAsync(cancellationToken);
+        
+        var result = await repository.GetAllAsync(request.PaginationParams, cancellationToken);
 
+        var tasks = result.Value;
+        if (request.TableName is not null)
+            tasks = tasks.Where(t => t.Table.Name == request.TableName).ToList();
+                
         if (result.IsFailed)
             return Result.Fail(ApplicationError.Conflict(ErrorCodes.Task.TaskFailedRetrieveTasks, "Failed to retrieve tasks"));
 
-        return result.Value.Select(task => mapper.Map<TaskDto>(task)).ToList();
+        var offset = request.PaginationParams.Offset ?? 3;
+        
+        var countPages = (int) Math.Ceiling(Convert.ToDouble(await repository.GetCountAsync(cancellationToken)) / offset);
+
+        var resultHandle = new GetTasksResultHandle(
+            tasks.Select(task => mapper.Map<TaskDto>(task)).ToList(),
+            countPages);
+
+        return resultHandle;
     }
 
 }

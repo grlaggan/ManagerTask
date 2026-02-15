@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Application.Models.Dtos;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
@@ -40,6 +41,21 @@ public class RabbitMqService : IRabbitMqService
             routingKey: RoutingKeys.TaskNotificationKey,
             arguments: null
         ).GetAwaiter().GetResult();
+        
+        _channel.QueueDeclareAsync(
+            queue: _rabbitOptions.NotificationQueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null
+        ).GetAwaiter().GetResult();
+
+        _channel.QueueBindAsync(
+            queue: _rabbitOptions.NotificationQueueName,
+            exchange: _rabbitOptions.Exchange,
+            routingKey: RoutingKeys.NotificationKey,
+            arguments: null
+        ).GetAwaiter().GetResult();
     }
 
     public async Task Publish(TaskCreatedNotification notification)
@@ -56,6 +72,26 @@ public class RabbitMqService : IRabbitMqService
         await _channel.BasicPublishAsync(
             exchange: _rabbitOptions.Exchange,
             routingKey: RoutingKeys.TaskNotificationKey,
+            mandatory: false,
+            basicProperties: properties,
+            body: body
+        );
+    }
+
+    public async Task NotificationPublish(NotificationCreatedNotification notification)
+    {
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var json = JsonSerializer.Serialize(notification, options);
+        var body = Encoding.UTF8.GetBytes(json);
+
+        var properties = new BasicProperties();
+
+        properties.Persistent = true;
+        properties.ContentType = "application/json";
+
+        await _channel.BasicPublishAsync(
+            exchange: _rabbitOptions.Exchange,
+            routingKey: RoutingKeys.NotificationKey,
             mandatory: false,
             basicProperties: properties,
             body: body

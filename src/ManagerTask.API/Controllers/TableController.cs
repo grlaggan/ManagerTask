@@ -1,4 +1,5 @@
 using ManagerTask.Application.Commands.Table;
+using ManagerTask.Application.Common;
 using ManagerTask.Application.Handlers.Table;
 using ManagerTask.Application.Queries;
 using MediatR;
@@ -25,15 +26,21 @@ public class TableController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<GetTablesResponse>> GetTablesAsync()
+    public async Task<ActionResult<GetTablesResponse>> GetTablesAsync([FromQuery] PaginationParams @params)
     {
-        var query = new GetTablesQuery();
+        var query = new GetTablesQuery(@params);
         var result = await mediator.Send(query);
 
         if (result.IsFailed)
             return result.ToProblemDetails<GetTablesResponse>(HttpContext);
 
-        var response = new GetTablesResponse(result.Value);
+        var resultHandle = result.Value;
+
+        var page = @params.Page ?? 1;
+        var offset = @params.Offset ?? 3;
+        var countPages = resultHandle.CountPages;
+
+        var response = new GetTablesResponse(resultHandle.Tables, page, offset, countPages);
         return Ok(response);
     }
 

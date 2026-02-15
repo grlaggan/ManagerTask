@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentResults;
 using ManagerTask.Application.Abstracts;
@@ -8,16 +12,26 @@ using MediatR;
 
 namespace ManagerTask.Application.Handlers.Table;
 
-public class GetTablesHandler(ITableRepository repository, IMapper mapper) : IRequestHandler<GetTablesQuery, Result<List<TableDto>>>
+public class GetTablesHandler(ITableRepository repository, IMapper mapper) : IRequestHandler<GetTablesQuery, Result<GetTablesResultHandle>>
 {
 
-    public async Task<Result<List<TableDto>>> Handle(GetTablesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetTablesResultHandle>> Handle(GetTablesQuery request, CancellationToken cancellationToken)
     {
-        var result = await repository.GetAllAsync(cancellationToken);
+        var result = await repository.GetAllAsync(request.Params, cancellationToken);
+        var tasks = result.Value;
+        
         if (result.IsFailed)
             return Result.Fail(ApplicationError.Conflict(ErrorCodes.Table.TableFailedRetrieveTables, "Failed to retrieve tables"));
 
-        return result.Value.Select(t => mapper.Map<TableDto>(t)).ToList();
+        var offset = request.Params.Offset ?? 3;
+        var countPages = (int) Math.Ceiling(Convert.ToDouble(await repository.GetCountAsync(cancellationToken)) / offset);
+
+        var resultHandle = new GetTablesResultHandle(
+            tasks.Select(t => mapper.Map<TableDto>(t)).ToList(),
+            countPages
+        );
+
+        return resultHandle;
     }
 
 }

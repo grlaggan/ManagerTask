@@ -10,8 +10,10 @@ from services.tasks_service import TasksService
 from models.tasks.task_dto import TaskDto
 from models.tasks.create_task_request import CreateTaskRequest
 from models.tasks.get_task_repsponse import GetTaskResponse
+from models.tasks.get_tasks_response import GetTasksResponse
 from states.form import Form
 from states.get_task import GetTaskState
+from states.get_tasks_by_table_name import GetTasksByTableNameState
 
 router = Router()
 config = Config("./.env")
@@ -172,6 +174,38 @@ async def get_task_by_name_command_process(message: Message, state: FSMContext) 
         await message.answer("Выберите дальнейшую операцию", reply_markup=operations_with_task)
     except:
         await message.answer('Произошла ошибка! Попробуйте еще раз!')
+
+@router.message(F.text == "Показать задачи по названию таблицы")
+async def get_tasks_by_table_name_command(message: Message, state: FSMContext) -> None:
+    await state.set_state(GetTasksByTableNameState.table_name)
+    await message.answer("Отправьте название таблицы")
+
+@router.message(GetTasksByTableNameState.table_name)
+async def get_tasks_by_table_name_command_process(message: Message, state: FSMContext) -> None:
+    try:
+        response: GetTasksResponse = await tasks_service.get_tasks(message.text)
+        
+        answer = ''
+        task: TaskDto
+        for task in response:
+            state_ = ''
+            match task.status:
+                case 0:
+                    state_ = 'Ожидание'
+                case 1:
+                    state_ = 'Выполнено'
+                case 2:
+                    state_ = 'Провалено'
+            
+            answer += f'Название: {task.name}\
+                        \nОписание: {task.description}\
+                        \nСостояние: {state_}\
+                        \nСоздана: {str(task.created_at).split('.')[0]}\
+                        \nТаблица: {task.table.name}\
+                        \n Время выполнения: {str(task.send_time).split('.')[0]}\n\n'
+                        
+        await message.answer(answer)
+        await state.clear()
         return
-
-
+    except:
+        raise

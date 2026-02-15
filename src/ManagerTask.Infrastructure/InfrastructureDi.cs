@@ -17,6 +17,7 @@ public static class InfrastructureDi
         {
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<ITransactionManager, TransactionManager>();
             services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             {

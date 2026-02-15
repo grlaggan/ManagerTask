@@ -22,6 +22,42 @@ namespace ManagerTask.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ManagerTask.Domain.Entities.NotificationEntity.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
+                        .HasColumnName("message");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("NotificationTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("notification_time");
+
+                    b.HasKey("Id")
+                        .HasName("pk_notifications_id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("notifications", (string)null);
+                });
+
             modelBuilder.Entity("ManagerTask.Domain.Entities.TableEntity.Table", b =>
                 {
                     b.Property<Guid>("Id")
@@ -43,6 +79,9 @@ namespace ManagerTask.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_tables");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("tables", (string)null);
                 });
@@ -83,6 +122,9 @@ namespace ManagerTask.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_tasks");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("table_id");
 

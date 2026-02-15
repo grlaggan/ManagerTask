@@ -1,10 +1,12 @@
 using FluentResults;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Application.Common;
 using ManagerTask.Application.Models.Dtos;
 using ManagerTask.Domain.Common.Errors;
 using ManagerTask.Domain.Entities.TableEntity;
 using ManagerTask.Domain.Entities.TaskEntity;
 using Microsoft.EntityFrameworkCore;
+using static ManagerTask.Infrastructure.Extensions.TasksExtension;
 using Task = ManagerTask.Domain.Entities.TaskEntity.Task;
 
 namespace ManagerTask.Infrastructure.Repositories;
@@ -30,11 +32,21 @@ public class TaskRepository : ITaskRepository
         return task.Id;
     }
 
-    public async Task<Result<List<Task>>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<Task>>> GetAllAsync(PaginationParams @params, CancellationToken cancellationToken)
     {
-        var tasks = await _context.Tasks.Include(t => t.Table).ToListAsync(cancellationToken);
+        var tasks = await _context.Tasks
+            .Include(t => t.Table)
+            .Page(@params)
+            .ToListAsync(cancellationToken);
 
         return tasks;
+    }
+
+    public async Task<int> GetCountAsync(CancellationToken cancellationToken)
+    {
+        var count = await _context.Tasks.CountAsync(cancellationToken);
+
+        return count;
     }
 
     public async Task<Result<Task>> GetByIdAsync(Guid id, CancellationToken cancellationToken)

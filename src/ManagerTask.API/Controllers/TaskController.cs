@@ -1,4 +1,5 @@
 using ManagerTask.Application.Commands.Task;
+using ManagerTask.Application.Common;
 using ManagerTask.Application.Models.Profiles;
 using ManagerTask.Application.Queries;
 using ManagerTask.Dtos.Task;
@@ -26,15 +27,20 @@ public class TaskController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<GetTasksResponse>> GetTasksAsync()
+    public async Task<ActionResult<GetTasksResponse>> GetTasksAsync([FromQuery] string? tableName, 
+        [FromQuery] PaginationParams @params)
     {
-        var query = new GetTasksQuery();
+        var query = new GetTasksQuery(tableName, @params);
         var result = await mediator.Send(query);
 
         if (result.IsFailed)
             return result.ToProblemDetails<GetTasksResponse>(HttpContext);
 
-        var response = new GetTasksResponse("Tasks retrieved successfully", result.Value);
+        var page = @params.Page ?? 1;
+        var offset = @params.Offset ?? 3;
+        var countPages = result.Value.CountPages;
+        var response = new GetTasksResponse("Tasks retrieved successfully",
+            result.Value.Tasks, page, offset, countPages);
 
         return Ok(response);
     }
@@ -70,7 +76,7 @@ public class TaskController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("byTableName/")]
+    [HttpPost("byTableName")]
     public async Task<ActionResult<CreateTaskResponse>> CreateTaskByTableNameAsync([FromBody] CreateTaskByTableNameRequest request)
     {
         var result = await mediator.Send(new CreateTaskByTableNameCommand(

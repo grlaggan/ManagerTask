@@ -38,6 +38,7 @@ builder.Services.AddAutoMapper(static cfg =>
 {
     cfg.AddProfile<TableProfile>();
     cfg.AddProfile<TaskProfile>();
+    cfg.AddProfile<NotificationProfile>();
 });
 builder.Services.AddQuartzDi();
 
