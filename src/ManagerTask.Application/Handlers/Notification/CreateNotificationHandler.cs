@@ -27,11 +27,10 @@ public class CreateNotificationHandler(
 
         if (result.IsFailed)
             return Result.Fail(result.Errors[0]);
-        
+
+        Console.WriteLine("in handler");
         await notificationRepository.SaveChangesAsync(cancellationToken);
 
-        await JobFactory.CreateNotificationJob(notification, scheduler);
-        
         return result.Value;
     }
 }

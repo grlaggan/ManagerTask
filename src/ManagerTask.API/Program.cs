@@ -1,7 +1,9 @@
 using ManagerTask;
 using ManagerTask.Application.Abstracts;
+using ManagerTask.Application.Handlers.Events;
 using ManagerTask.Application.Handlers.Table;
 using ManagerTask.Application.Models.Profiles;
+using ManagerTask.Domain.Entities.Events;
 using ManagerTask.Infrastructure;
 using ManagerTask.Infrastructure.Extensions;
 
@@ -14,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblyContaining<GetTablesHandler>();
+    cfg.RegisterServicesFromAssembly(typeof(TaskCreatedEventHandler).Assembly);
 }
 );
 builder.Services.AddCors(opt =>

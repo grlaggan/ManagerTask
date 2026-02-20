@@ -38,5 +38,6 @@ public class ErrorCodes
         public const string NotificationNameEmpty = "notification.empty.name";
         public const string NotificationMessageEmpty = "notification.empty.message";
         public const string NotificationTimeInvalid = "notification.invalid.time";
+        public const string NotificationIsNull = "notification.null";
     }
 }

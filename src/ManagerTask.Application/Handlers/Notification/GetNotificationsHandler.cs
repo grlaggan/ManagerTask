@@ -23,7 +23,7 @@ public class GetNotificationsHandler(INotificationRepository notificationReposit
 
         var resultHandle = new GetNotificationsResultHandle(
             result.Value.Select(n => mapper.Map<NotificationDto>(n)).ToList(),
-            count
+            (int) Math.Ceiling(Convert.ToDouble(count) / request.Params.Offset ?? 3)
         );
 
         return resultHandle;

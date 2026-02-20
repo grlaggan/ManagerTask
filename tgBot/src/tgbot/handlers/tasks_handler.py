@@ -16,7 +16,7 @@ from states.get_task import GetTaskState
 from states.get_tasks_by_table_name import GetTasksByTableNameState
 
 router = Router()
-config = Config("./.env")
+config = Config("./.env.tgBot")
 tasks_service = TasksService(config)
 
 @router.message(F.text == "Задачи" or Command('tasks'))

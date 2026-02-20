@@ -1,6 +1,7 @@
 using FluentResults;
 using ManagerTask.Application.Abstracts;
 using ManagerTask.Application.Common;
+using ManagerTask.Domain.Common.Errors;
 using ManagerTask.Domain.Entities.NotificationEntity;
 using ManagerTask.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,18 @@ public class NotificationRepository(IApplicationDbContext context) : INotificati
             .ToListAsync(cancellationToken);
 
         return notifications;
+    }
+
+    public async Task<Result<Notification>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var notification = await context.Notifications
+            .FirstOrDefaultAsync(n => n.Id == id, cancellationToken);
+
+        if (notification == null)
+            return Result.Fail(ApplicationError
+                .NotFound(ErrorCodes.Notification.NotificationIsNull, "Notification was not found!"));
+
+        return notification;
     }
 
     public async Task<int> GetCountAsync(CancellationToken cancellationToken)

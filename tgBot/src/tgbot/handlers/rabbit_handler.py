@@ -12,7 +12,7 @@ from models.tasks.get_task_repsponse import GetTaskResponse
 
 def create_handler(bot: Bot):
     async def handler(message: aio_pika.IncomingMessage):
-        config = Config(".env")
+        config = Config(".env.tgBot")
         task_service = TasksService(config)
         
         async with message.process():

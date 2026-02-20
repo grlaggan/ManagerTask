@@ -8,7 +8,7 @@ from aiogram.enums import ParseMode
 
 from config.config import FORMAT_LOGGER, Config
 
-from handlers import commands_handlers, tables_handler, tasks_handler, rabbit_handler
+from handlers import commands_handlers, tables_handler, tasks_handler, rabbit_handler, notifications_handler
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ async def main():
         format=FORMAT_LOGGER
     )
     
-    config = Config(path_env="./.env")
+    config = Config(path_env="./.env.tgBot")
     
     bot = Bot(
         token=config.tg_bot.token,
@@ -34,7 +34,7 @@ async def main():
     
     logger.info("Starting bot")
     
-    dp.include_routers(commands_handlers.router, tasks_handler.router, tables_handler.router)
+    dp.include_routers(commands_handlers.router, tasks_handler.router, tables_handler.router, notifications_handler.router)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 

@@ -9,5 +9,6 @@ public interface INotificationRepository
     public Task<Result<Guid>> CreateAsync(Notification notification, CancellationToken cancellationToken);
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     public Task<Result<List<Notification>>> GetAllAsync(PaginationParams @params, CancellationToken cancellationToken);
+    public Task<Result<Notification>> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     public Task<int> GetCountAsync(CancellationToken cancellationToken);
 }

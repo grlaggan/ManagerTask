@@ -1,10 +1,12 @@
 using FluentResults;
 using ManagerTask.Domain.Common.Errors;
+using ManagerTask.Domain.Entities.BaseEntity;
+using ManagerTask.Domain.Entities.Events;
 using ManagerTask.Domain.Entities.TableEntity;
 
 namespace ManagerTask.Domain.Entities.TaskEntity;
 
-public class Task
+public class Task : Entity
 {
     public Guid Id { get; private set; }
     public string Name { get; set; }
@@ -36,8 +38,15 @@ public class Task
 
         var task = new Task(Guid.NewGuid(), name, description, sendTime)
         {
-            Table = table
+            Table = table,
         };
+        
+        task.RaiseDomainEvent(new TaskCreatedDomainEvent
+        {
+            Task = task,
+            TableName = table.Name
+        });
+        
         return task;
     }
 

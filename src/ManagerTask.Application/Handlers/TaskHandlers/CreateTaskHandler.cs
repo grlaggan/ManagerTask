@@ -88,27 +88,6 @@ public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, Result<Guid>
             transactionScope.Rollback();
             return Result.Fail(resultCommit.Errors[0]);
         }
-
-        var task = taskResult.Value;
-        var table = tableResult.Value;
-
-        if (task.SendTime - DateTime.UtcNow > TimeSpan.FromDays(1))
-        {
-            await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
-            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 1);
-            await JobFactory.CreateJob(task, table.Name, scheduler, days: 1);
-        } else if (task.SendTime - DateTime.UtcNow < TimeSpan.FromDays(1) &&
-                   task.SendTime - DateTime.UtcNow > TimeSpan.FromHours(5))
-        {
-            await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
-            await JobFactory.CreateJob(task, table.Name, scheduler, hours: 1);
-        }
-        else
-        {
-            await JobFactory.CreateJob(task, table.Name, scheduler, minutes: 5);
-        }
-
-        await JobFactory.CreateJob(task, table.Name, scheduler);
         
         return result.Value;
     }

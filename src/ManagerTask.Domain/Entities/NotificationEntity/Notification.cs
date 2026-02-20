@@ -1,9 +1,11 @@
 using FluentResults;
 using ManagerTask.Domain.Common.Errors;
+using ManagerTask.Domain.Entities.BaseEntity;
+using ManagerTask.Domain.Entities.Events;
 
 namespace ManagerTask.Domain.Entities.NotificationEntity;
 
-public class Notification
+public class Notification : Entity
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -33,7 +35,13 @@ public class Notification
         if (DateTime.UtcNow > notificationTime)
             return Result.Fail(ApplicationError.Validation(ErrorCodes.Notification.NotificationTimeInvalid,
                 "Notification time is invalid!"));
+        var notification = new Notification(Guid.NewGuid(), name, message, notificationTime);
         
-        return new Notification(Guid.NewGuid(), name, message, notificationTime);
+        notification.RaiseDomainEvent(new NotificationCreatedDomainEvent
+        {
+            Notification = notification
+        });
+        
+        return notification;
     }
 }

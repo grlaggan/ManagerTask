@@ -52,4 +52,22 @@ public class NotificationController(IMediator mediator) : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<GetNotificationByIdResponse>> GetByIdAsync([FromRoute] Guid id)
+    {
+        var result = await mediator.Send(new GetNotificationByIdQuery(id));
+
+        if (result.IsFailed)
+            return result.ToProblemDetails<GetNotificationByIdResponse>(HttpContext);
+
+        var response = new GetNotificationByIdResponse(
+            result.Value.Name,
+            result.Value.Message,
+            result.Value.NotificationTime,
+            result.Value.CreatedAt
+        );
+
+        return Ok(response);
+    }
 }

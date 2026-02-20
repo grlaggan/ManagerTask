@@ -3,7 +3,8 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 start_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Задачи"),
-        KeyboardButton(text="Таблицы")]
+        KeyboardButton(text="Таблицы"),
+        KeyboardButton(text="Уведомления")]
     ]
 )
 
@@ -37,6 +38,13 @@ operations_with_task = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Изменить состояние")],
         [KeyboardButton(text="Отменить")]
+    ],
+    resize_keyboard=True
+)
+
+notifications_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Получить уведомления")]
     ],
     resize_keyboard=True
 )

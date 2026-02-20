@@ -16,6 +16,7 @@ class Config:
         self.tg_bot = self._tg_bot(token=self._env("BOT_TOKEN"))
         self.tasks_endpoint = self._env("TASKS_ENDPOINT")
         self.tables_endpoint = self._env("TABLES_ENDPOINT")
+        self.notifications_endpoint=self._env("NOTIFICATIONS_ENDPOINT")
         self.rabbitmq_url = self._env("RABBIT_URL")
         self.queue_name = self._env("QUEUE_NAME")
         self.test_chat_id = self._env("TEST_CHAT_ID")
