@@ -3,7 +3,7 @@ using ManagerTask.Application.Abstracts;
 using ManagerTask.Application.Handlers.Events;
 using ManagerTask.Application.Handlers.Table;
 using ManagerTask.Application.Models.Profiles;
-using ManagerTask.Domain.Entities.Events;
+using ManagerTask.HealthChecks;
 using ManagerTask.Infrastructure;
 using ManagerTask.Infrastructure.Extensions;
 
@@ -37,6 +37,10 @@ builder.Services.AddControllers()
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>(nameof(DatabaseHealthCheck))
+    .AddCheck<RabbitMqHealthCheck>(nameof(RabbitMqHealthCheck));
+
 builder.Services.AddAutoMapper(static cfg =>
 {
     cfg.AddProfile<TableProfile>();
@@ -50,7 +54,6 @@ var app = builder.Build();
 app.UseCors("AllowAll");
 app.MapControllers();
 app.ConfigureExceptionHandler();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger()
@@ -59,5 +62,7 @@ if (app.Environment.IsDevelopment())
             opt.SwaggerEndpoint("/swagger/v1/swagger.json", "ManagerTask API V1");
         });
 }
+
+app.MapHealthChecks("/health");
 
 app.Run();

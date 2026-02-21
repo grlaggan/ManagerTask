@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from keyboards.keyboards import tasks_keyboard, times_keyboard, operations_with_task
 from config.config import Config
 from services.tasks_service import TasksService
+from services.health_check_service import HealthCheckService
 from models.tasks.task_dto import TaskDto
 from models.tasks.create_task_request import CreateTaskRequest
 from models.tasks.get_task_repsponse import GetTaskResponse
@@ -18,6 +19,7 @@ from states.get_tasks_by_table_name import GetTasksByTableNameState
 router = Router()
 config = Config("./.env.tgBot")
 tasks_service = TasksService(config)
+health_check_service = HealthCheckService(config)
 
 @router.message(F.text == "Задачи" or Command('tasks'))
 async def process_tasks_command(message: Message) -> None:
@@ -25,6 +27,12 @@ async def process_tasks_command(message: Message) -> None:
 
 @router.message(F.text == "Показать задачи")
 async def get_tasks_command(message: Message) -> None:
+    health_check_result = await health_check_service.check_health_api()
+    
+    if not health_check_result:
+        await message.answer(text="Возникла ошибка на стороне сервера! Попробуйте позже.")
+        return
+    
     data = await tasks_service.get_tasks()
     answer = ''
     
@@ -79,6 +87,12 @@ async def create_task_command_time_days(message: Message, state: FSMContext) -> 
 
 @router.message(Form.send_time_minutes)
 async def create_task_command_send_time_minutes_complete(message: Message, state: FSMContext) -> None:
+    health_check_result = await health_check_service.check_health_api()
+    
+    if not health_check_result:
+        await message.answer(text="Возникла ошибка на стороне сервера! Попробуйте позже.")
+        return
+    
     state_data = await state.get_data()
     
     utc_now = datetime.now(timezone.utc)
@@ -97,6 +111,12 @@ async def create_task_command_send_time_minutes_complete(message: Message, state
 
 @router.message(Form.send_time_hours)
 async def create_task_command_send_time_hours_complete(message: Message, state: FSMContext) -> None:
+    health_check_result = await health_check_service.check_health_api()
+    
+    if not health_check_result:
+        await message.answer(text="Возникла ошибка на стороне сервера! Попробуйте позже.")
+        return
+    
     state_data = await state.get_data()
     
     utc_now = datetime.now(timezone.utc)
@@ -115,6 +135,12 @@ async def create_task_command_send_time_hours_complete(message: Message, state: 
 
 @router.message(Form.send_time_days)
 async def create_task_command_send_time_days_compelte(message: Message, state: FSMContext) -> None:
+    health_check_result = await health_check_service.check_health_api()
+    
+    if not health_check_result:
+        await message.answer(text="Возникла ошибка на стороне сервера! Попробуйте позже.")
+        return
+    
     state_data = await state.get_data()
     
     utc_now = datetime.now(timezone.utc)
@@ -140,6 +166,12 @@ async def get_task_by_name_command(message: Message, state: FSMContext) -> None:
     
 @router.message(GetTaskState.task_name, F.text == "Изменить состояние")
 async def change_status_task_command(message: Message, state: FSMContext) -> None:
+    health_check_result = await health_check_service.check_health_api()
+    
+    if not health_check_result:
+        await message.answer(text="Возникла ошибка на стороне сервера! Попробуйте позже.")
+        return
+    
     try:
         state_data = await state.get_data()
         await tasks_service.change_status(state_data['id'])
@@ -156,6 +188,12 @@ async def cancel_change_task_command(message: Message, state: FSMContext) -> Non
     
 @router.message(GetTaskState.task_name)
 async def get_task_by_name_command_process(message: Message, state: FSMContext) -> None:
+    health_check_result = await health_check_service.check_health_api()
+    
+    if not health_check_result:
+        await message.answer(text="Возникла ошибка на стороне сервера! Попробуйте позже.")
+        return
+    
     try:
         response: GetTaskResponse = await tasks_service.get_task_by_name(message.text)
         
@@ -182,6 +220,12 @@ async def get_tasks_by_table_name_command(message: Message, state: FSMContext) -
 
 @router.message(GetTasksByTableNameState.table_name)
 async def get_tasks_by_table_name_command_process(message: Message, state: FSMContext) -> None:
+    health_check_result = await health_check_service.check_health_api()
+    
+    if not health_check_result:
+        await message.answer(text="Возникла ошибка на стороне сервера! Попробуйте позже.")
+        return
+    
     try:
         response: GetTasksResponse = await tasks_service.get_tasks(message.text)
         
