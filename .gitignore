@@ -3,4 +3,7 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-tgBot/.env.tgBot/
+/tgBot/.env.tgBot/
+/.idea
+/.gitignore
+/.github
