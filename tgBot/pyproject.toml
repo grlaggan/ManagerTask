@@ -1,0 +1,21 @@
+[project]
+name = "tgbot"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Furuta Nimura",email = "solodcenkoivan01@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.14, <3.15"
+dependencies = [
+    "aiogram (>=3.24.0,<4.0.0)",
+    "environs (>=14.5.0,<15.0.0)",
+    "aio-pika (>=9.5.8,<10.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "tgbot", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

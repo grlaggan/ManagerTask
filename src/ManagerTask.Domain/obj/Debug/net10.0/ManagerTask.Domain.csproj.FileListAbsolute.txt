@@ -1,0 +1,13 @@
+D:\dev\ManagerTask\src\ManagerTask.Domain\bin\Debug\net10.0\ManagerTask.Domain.deps.json
+D:\dev\ManagerTask\src\ManagerTask.Domain\bin\Debug\net10.0\ManagerTask.Domain.dll
+D:\dev\ManagerTask\src\ManagerTask.Domain\bin\Debug\net10.0\ManagerTask.Domain.pdb
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.csproj.AssemblyReference.cache
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.AssemblyInfoInputs.cache
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.AssemblyInfo.cs
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.csproj.CoreCompileInputs.cache
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.sourcelink.json
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.dll
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\refint\ManagerTask.Domain.dll
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ManagerTask.Domain.pdb
+D:\dev\ManagerTask\src\ManagerTask.Domain\obj\Debug\net10.0\ref\ManagerTask.Domain.dll
